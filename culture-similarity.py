@@ -69,13 +69,16 @@ for i in range(len(culture_map_keys)-1):
         ranked_by_similarity.append([culture_map_keys[i], culture_map_keys[j], culture_similarity(culture_map[culture_map_keys[i]], culture_map[culture_map_keys[j]])])
 ranked_by_similarity.sort(key=lambda x: x[2], reverse=True)
 
-ranked_by_similarity = ranked_by_similarity[:50]
+
 
 # os.mkdir("culture_similarity")
 f = open("culture_similarity/networkgraph.csv", "w")
 f.write("Source, Target, Value \n")
-for i in ranked_by_similarity[:50]:
-    f.write(i[0]+","+i[1]+","+str(i[2]*100)+"\n")
+for i in ranked_by_similarity:
+    if i[2]*100 > 10:
+        f.write(i[0]+","+i[1]+","+str(i[2]*100)+"\n")
+    elif i in ranked_by_similarity:
+        ranked_by_similarity = ranked_by_similarity[:ranked_by_similarity.index(i)]
 f.close()
 
 f = open("culture_similarity/cultures.csv", "w")
