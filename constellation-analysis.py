@@ -153,7 +153,9 @@ def constellation_visual_score(constellationid):
         distances.sort()
         constellation_star_scores[star]["distance"] = min(distances)
         if len(distances) >= 2:
-            constellation_star_scores[star]["equal_spacing"] = min([abs(distances[i]-distances[i+1]) for i in range(len(distances)-1)])
+            equal_spacing_list = [abs(0.5-distances[i]/(distances[i]+distances[i+1])) for i in range(len(distances)-1) if distances[i]+distances[i+1] != 0]
+            if len(equal_spacing_list) != 0:
+                constellation_star_scores[star]["equal_spacing"] = min(equal_spacing_list)
     for line in lines:
         for i in range(len(line)-2):
             angle = angle_formed(line[i], line[i+1], line[i+2])
@@ -339,8 +341,8 @@ def simulated_prolificness(constellation):
     sim_score = 0
     if constellation["max_magnitude"]:
         sim_score -= constellation["max_magnitude"]
-    if constellation["max_continuation"]:
-        sim_score += 1/constellation["max_continuation"]
+    if constellation["max_equal_spacing"]:
+        sim_score -= 10*constellation["max_equal_spacing"]
     return sim_score
 
 rank_constellations("constelation_ranked_by_simulated_prolificness.csv", "Simulated Prolificness", simulated_prolificness)
