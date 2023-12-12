@@ -159,8 +159,8 @@ def constellation_visual_score(constellationid):
     for line in lines:
         for i in range(len(line)-2):
             angle = angle_formed(line[i], line[i+1], line[i+2])
-            if constellation_star_scores[line[i+1]]["colinearity"] == None or constellation_star_scores[line[i+1]]["colinearity"] < angle:
-                constellation_star_scores[line[i+1]]["colinearity"] = angle
+            if constellation_star_scores[line[i+1]]["colinearity"] == None or abs(math.pi-angle) < constellation_star_scores[line[i+1]]["colinearity"]:
+                constellation_star_scores[line[i+1]]["colinearity"] = abs(math.pi-angle)
         if len(line) > 4:
             for i in range(len(line)-3):
                 first_angle = angle_formed(line[i], line[i+1], line[i+2])
@@ -242,7 +242,7 @@ else:
         constellation["max_distance"] = safe_max([float(constellation["scores"][i]["distance"]) for i in constellation["scores"]])
         constellation["max_equal_spacing"] = safe_max([float(constellation["scores"][i]["equal_spacing"]) for i in constellation["scores"] if constellation["scores"][i]["equal_spacing"] != None])
         constellation["max_continuation"] = safe_max([float(constellation["scores"][i]["continuation"]) for i in constellation["scores"] if constellation["scores"][i]["continuation"] != None])
-        constellation["min_colinearity"] = safe_max([float(constellation["scores"][i]["colinearity"]) for i in constellation["scores"] if constellation["scores"][i]["colinearity"] != None])
+        constellation["max_colinearity"] = safe_max([float(constellation["scores"][i]["colinearity"]) for i in constellation["scores"] if constellation["scores"][i]["colinearity"] != None])
     open(constellation_list_file, "w").write(json.dumps(constellation_list))
 
 constellations_ranked_by_proflicness_file = "constelation_proflicness.json"
@@ -323,19 +323,19 @@ rank_constellations("constelation_ranked_by_avg_magnitude.csv", "Average Magnitu
 rank_constellations("constelation_ranked_by_avg_distance.csv", "Average Distance", lambda x: x["average_distance"], False)
 rank_constellations("constelation_ranked_by_avg_equal_spacing.csv", "Average Equal Spacing", lambda x: x["average_equal_spacing"], False)
 rank_constellations("constelation_ranked_by_avg_continuation.csv", "Average Continuation", lambda x: x["average_continuation"], False)
-rank_constellations("constelation_ranked_by_avg_colinearity.csv", "Average Colinearity", lambda x: x["average_colinearity"], True)
+rank_constellations("constelation_ranked_by_avg_colinearity.csv", "Average Colinearity", lambda x: x["average_colinearity"], False)
 
 rank_constellations("constelation_ranked_by_max_magnitude.csv", "Max Magnitude", lambda x: x["max_magnitude"], False)
 rank_constellations("constelation_ranked_by_max_distance.csv", "Max Distance", lambda x: x["max_distance"], False)
 rank_constellations("constelation_ranked_by_max_equal_spacing.csv", "Max Equal Spacing", lambda x: x["max_equal_spacing"], False)
 rank_constellations("constelation_ranked_by_max_continuation.csv", "Max Continuation", lambda x: x["max_continuation"], False)
-rank_constellations("constelation_ranked_by_min_colinearity.csv", "Min Colinearity", lambda x: x["min_colinearity"], True)
+rank_constellations("constelation_ranked_by_max_colinearity.csv", "Min Colinearity", lambda x: x["max_colinearity"], False)
 
 # "magnitude": None, # magnitude
 # "distance": None, # distance to closest star
 # "equal_spacing": None, # minimum difference in distances between stars
 # "continuation": None, # minimum difference in neighboring angles
-# "colinearity": None # closest angle gets to pi
+# "colinearity": None # pi-(closest angle gets to pi)
 
 def simulated_prolificness(constellation):
     sim_score = 0
